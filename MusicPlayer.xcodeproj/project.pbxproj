@@ -76,6 +76,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6CA08ACD24DDAA1100B7D510 /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				6CA0ABBE24DD7418003FFC44 /* SceneDelegate.swift */,
+				6CA0ABC024DD7418003FFC44 /* ContentView.swift */,
+				6CA0ABBC24DD7418003FFC44 /* AppDelegate.swift */,
+				6CA0ABC224DD7419003FFC44 /* Assets.xcassets */,
+				6CA0ABC724DD7419003FFC44 /* LaunchScreen.storyboard */,
+				6CA0ABCA24DD7419003FFC44 /* Info.plist */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
+		6CA08ACE24DDAA2F00B7D510 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		6CA08ACF24DDAA3B00B7D510 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
 		6CA0ABB024DD7418003FFC44 = {
 			isa = PBXGroup;
 			children = (
@@ -99,12 +126,9 @@
 		6CA0ABBB24DD7418003FFC44 /* MusicPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				6CA0ABBC24DD7418003FFC44 /* AppDelegate.swift */,
-				6CA0ABBE24DD7418003FFC44 /* SceneDelegate.swift */,
-				6CA0ABC024DD7418003FFC44 /* ContentView.swift */,
-				6CA0ABC224DD7419003FFC44 /* Assets.xcassets */,
-				6CA0ABC724DD7419003FFC44 /* LaunchScreen.storyboard */,
-				6CA0ABCA24DD7419003FFC44 /* Info.plist */,
+				6CA08ACF24DDAA3B00B7D510 /* Modules */,
+				6CA08ACE24DDAA2F00B7D510 /* Scenes */,
+				6CA08ACD24DDAA1100B7D510 /* SupportingFiles */,
 				6CA0ABC424DD7419003FFC44 /* Preview Content */,
 			);
 			path = MusicPlayer;
@@ -438,7 +462,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MusicPlayer/Preview Content\"";
 				DEVELOPMENT_TEAM = 475YN7ANSF;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = MusicPlayer/Info.plist;
+				INFOPLIST_FILE = MusicPlayer/SupportingFiles/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -458,7 +482,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MusicPlayer/Preview Content\"";
 				DEVELOPMENT_TEAM = 475YN7ANSF;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = MusicPlayer/Info.plist;
+				INFOPLIST_FILE = MusicPlayer/SupportingFiles/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
