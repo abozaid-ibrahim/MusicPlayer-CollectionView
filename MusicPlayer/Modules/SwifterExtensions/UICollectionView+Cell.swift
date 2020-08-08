@@ -15,20 +15,27 @@ extension UICollectionViewCell {
 }
 
 extension UICollectionView {
+    enum CollectionWidth {
+        case twoColumn
+    }
+
     /// TIP: you must set the reuse identifier as same as the nib file name.
     func register<T: UICollectionViewCell>(_: T.Type) {
         let nib = UINib(nibName: T.identifier, bundle: Bundle(for: T.self))
         register(nib, forCellWithReuseIdentifier: T.identifier)
     }
 
-    func setCell(width: CGFloat, height: CGFloat) {
+    func setCell(type: CollectionWidth, padding: CGFloat = CGFloat(8)) {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let cellSize = CGSize(width: width, height: height)
-        layout.itemSize = cellSize
-        layout.sectionInset = .zero
-        layout.minimumInteritemSpacing = 8
-        layout.minimumLineSpacing = 0
-        setCollectionViewLayout(layout, animated: true)
+        layout.scrollDirection = .vertical
+        if case .twoColumn = type {
+            let space = (self.bounds.width - (3 * padding)) / 2
+            let cellSize = CGSize(width: space, height: space)
+            layout.itemSize = cellSize
+            layout.sectionInset = .init(top: padding, left: padding, bottom: padding, right: padding)
+            layout.minimumInteritemSpacing = padding
+            layout.minimumLineSpacing = padding
+            setCollectionViewLayout(layout, animated: true)
+        }
     }
 }

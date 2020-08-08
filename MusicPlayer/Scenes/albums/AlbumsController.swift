@@ -6,12 +6,17 @@
 //  Copyright © 2020 abuzeid. All rights reserved.
 //
 
+import RxSwift
 import UIKit
 
+import RxCocoa
 final class AlbumsController: UICollectionViewController {
-    private let viewModel: AlbumsViewModelType? = nil
+    private let viewModel: AlbumsViewModelType
+    private let disposeBag = DisposeBag()
 
-    init() {
+    var items: [Session] { viewModel.sessionsList }
+    init(viewModel: AlbumsViewModelType) {
+        self.viewModel = viewModel
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
 
@@ -22,19 +27,32 @@ final class AlbumsController: UICollectionViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.backgroundColor = .white
-        collectionView!.register(AlbumCollectionCell.self)
-        let width = collectionView.bounds.width / 2
-        collectionView.setCell(width: width, height: width + 40)
+        title = "Collections"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        collectionView.register(AlbumCollectionCell.self)
+        collectionView.setCell(type: .twoColumn)
+        viewModel.loadData(showLoader: false)
+
+        viewModel.reloadFields.filter { $0 == true }.bind(to: collectionView.rx.reloadData).disposed(by: disposeBag)
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return items.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumCollectionCell.identifier, for: indexPath) as! AlbumCollectionCell
-
+        cell.setData(with: items[indexPath.row])
         return cell
+    }
+}
+
+extension Reactive where Base: UICollectionView {
+    public var reloadData: Binder<Bool> {
+        return Binder(base) { collectionView, active in
+            if active {
+                collectionView.reloadData()
+            }
+        }
     }
 }

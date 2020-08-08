@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RecipesListResponse: Codable {
+struct AlbumsResponse: Codable {
     let data: DataClass
 }
 

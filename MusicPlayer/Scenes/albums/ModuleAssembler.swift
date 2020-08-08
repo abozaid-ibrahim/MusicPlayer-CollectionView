@@ -21,6 +21,6 @@ enum Destination {
 
 extension Destination {
     func getAlbumsController() -> UIViewController {
-        return AlbumsController()
+        return AlbumsController(viewModel: AlbumsViewModel())
     }
 }

@@ -9,10 +9,21 @@
 import UIKit
 
 final class AlbumCollectionCell: UICollectionViewCell {
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var nameLabel: UILabel!
+    @IBOutlet private var titleLabel: UILabel!
+    @IBOutlet private var genresLabel: UILabel!
+
+    func setData(with session: Session) {
+        imageView.setImage(with: session.currentTrack.artworkURL)
+        nameLabel.text = session.name
+        titleLabel.text = session.currentTrack.title
+        genresLabel.text = String(session.genres.count)
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        contentView.cornerRadius = 12
+//        self.color
     }
-
 }
