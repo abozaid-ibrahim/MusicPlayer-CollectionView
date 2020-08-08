@@ -100,6 +100,7 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="293" height="266"/>
             <connections>
+                <outlet property="genresLabel" destination="Xkc-78-R3s" id="kMo-1q-hEa"/>
                 <outlet property="imageView" destination="qAo-e1-V0X" id="tBu-fW-fQp"/>
                 <outlet property="nameLabel" destination="EgG-Lf-GSe" id="L7c-Pc-alx"/>
                 <outlet property="titleLabel" destination="J32-SA-cpA" id="QU0-vR-TgD"/>

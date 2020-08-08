@@ -12,6 +12,7 @@ import Foundation
 
 enum AlbumsApi {
     case feed(page: Int, count: Int)
+    case search(String)
 }
 
 extension AlbumsApi: RequestBuilder {
@@ -20,7 +21,12 @@ extension AlbumsApi: RequestBuilder {
     }
 
     var path: String {
-        return "5df79b1f320000f4612e011e"
+        switch self {
+        case .feed:
+            return "5df79b1f320000f4612e011e"
+        case .search:
+            return "5df79b1f320000f4612e011e"
+        }
     }
 
     var endpoint: URL {
@@ -33,20 +39,7 @@ extension AlbumsApi: RequestBuilder {
 
     var request: URLRequest {
         switch self {
-        case let .feed(prm):
-//            let prmDic = [
-////                "page": prm.page,
-////                "count": prm.count,
-//            ] as [String: Any]
-            var items = [URLQueryItem]()
-            var myURL = URLComponents(string: endpoint.absoluteString)
-//            for (key, value) in prmDic {
-//                items.append(URLQueryItem(name: key, value: "\(value)"))
-//            }
-            myURL?.queryItems = items
-            var request = URLRequest(url: myURL!.url!, cachePolicy: URLRequest.CachePolicy.reloadIgnoringCacheData, timeoutInterval: 30)
-            
-            request.httpMethod = method.rawValue
+        case .feed, .search:
             return URLRequest(url: endpoint)
         }
     }

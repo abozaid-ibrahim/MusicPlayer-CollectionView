@@ -13,22 +13,39 @@ import RxSwift
 
 protocol AlbumsViewModelType {
     func loadData(showLoader: Bool)
+    func searchCanceled()
+    var searchFor: PublishSubject<String> { get }
     var sessionsList: [Session] { get }
     var reloadFields: PublishSubject<Bool> { get }
 }
 
 final class AlbumsViewModel: AlbumsViewModelType {
+    let searchFor = PublishSubject<String>()
+
     private(set) var reloadFields = PublishSubject<Bool>()
 
 //    private let showLoader = PublishSubject<Bool>()
     private let apiClient: ApiClient
     private var page = Page()
-    private(set) var sessionsList: [Session] = []
+    var sessionsList: [Session] {
+        isSearchingMode ? searchResultList : _sessionsList
+    }
+
+    private(set) var _sessionsList: [Session] = []
+
+    private(set) var searchResultList: [Session] = []
+    private var isSearchingMode = false
     private let disposeBag = DisposeBag()
     private let showLoader = PublishSubject<Bool>()
 
     init(apiClient: ApiClient = HTTPClient()) {
         self.apiClient = apiClient
+        bindForSearch()
+    }
+
+    func searchCanceled() {
+        isSearchingMode = false
+        reloadFields.onNext(true)
     }
 
     func loadData(showLoader: Bool = true) {
@@ -42,10 +59,9 @@ final class AlbumsViewModel: AlbumsViewModelType {
 
         api.subscribe(onNext: { [unowned self] value in
 
-            self.sessionsList.append(contentsOf: value?.data.sessions ?? [])
+            self._sessionsList.append(contentsOf: value?.data.sessions ?? [])
             self.reloadFields.onNext(true)
             showLoader ? self.showLoader.onNext(false) : ()
-            self.handleApiResponse()
         }, onError: { err in
 //                  self.error.onNext(err)
             print(">>failure")
@@ -54,45 +70,32 @@ final class AlbumsViewModel: AlbumsViewModelType {
         }).disposed(by: disposeBag)
     }
 
+    private func bindForSearch() {
+        searchFor.distinctUntilChanged()
+            .subscribe(onNext: { [unowned self] text in
+                // remove repeated values
+                //        showLoader ? self.showLoader.onNext(true) : ()
+
+                let endpoint: Observable<AlbumsResponse?> = self.apiClient.getData(of: AlbumsApi.search(text))
+                endpoint.subscribe(onNext: { [unowned self] value in
+                    self.isSearchingMode = true
+                    self.searchResultList = value?.data.sessions ?? []
+                    self.reloadFields.onNext(true)
+                }, onError: { err in
+                    //                  self.error.onNext(err)
+                    print(">>failure")
+
+                    print(err)
+                }).disposed(by: self.disposeBag)
+            }).disposed(by: disposeBag)
+    }
+
     private func updatePage(with count: Int) {
         page.isFetchingData = false
         page.currentPage += 1
         page.fetchedItemsCount = count
     }
 
-    /// emit values to ui to fill the table view if the data is a littlet reload untill fill the table
-    private func handleApiResponse() {
-//        let artists = sortMusicByArtist(allSongsList)
-//        artistsList.onNext(artists)
-//        updatePage(with: artists.count)
-    }
-
-//    /// group the songs by artist
-//    /// - Parameter list: list of songs for every Artist
-//    func sortMusicByArtist(_ list: SongsList) -> [Artist] {
-//        var users: [String: Artist] = [:]
-//        for song in list {
-//            if var user = users[song.userId ?? ""] {
-//                user.songsCount += 1
-//                users[song.userId ?? ""] = user
-//            } else {
-//                var user = song.user
-//                user?.songsCount += 1
-//                users[song.userId ?? ""] = user
-//            }
-//        }
-//
-//        return users.values.sorted { $0.songsCount > $1.songsCount }
-//    }
-
-    /// return songs list for th singer
-    /// - Parameter user: the current user that will display his songs
-//    func songsOf(user: Artist) {
-//        currentUser = user
-//        let songs = allSongsList.filter { $0.userId == user.id }
-//        didSelectArtistsAlbum.onNext(songs)
-//    }
-//
     func loadMoreCells(prefetchRowsAt indexPaths: [IndexPath]) {
         if indexPaths.contains(where: isLoadingCell) {
             loadData(showLoader: false)
