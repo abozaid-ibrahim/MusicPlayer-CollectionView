@@ -36,6 +36,12 @@ final class AlbumsController: UICollectionViewController, Loadable {
 // MARK: - setup
 
 private extension AlbumsController {
+    private func show(error: String) {
+        let alert = UIAlertController(title: nil, message: error, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: Str.cancel, style: .cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+
     func bindToViewModel() {
         viewModel.reloadFields
             .observeOn(MainScheduler.instance)
@@ -46,13 +52,17 @@ private extension AlbumsController {
                 }
             })
             .disposed(by: disposeBag)
-        viewModel.isDataLoading.bind(onNext: showLoading(show:)).disposed(by: disposeBag)
+        viewModel.isDataLoading
+            .observeOn(MainScheduler.instance)
+            .bind(onNext: showLoading(show:)).disposed(by: disposeBag)
+        viewModel.error
+            .observeOn(MainScheduler.instance)
+            .bind(onNext: show(error:)).disposed(by: disposeBag)
         viewModel.loadData(showLoader: true)
     }
 
     func setupCollection() {
         title = Str.albumsTitle
-        navigationController?.navigationBar.prefersLargeTitles = true
         collectionView.register(AlbumCollectionCell.self)
         collectionView.setCell(type: .twoColumn)
         collectionView.prefetchDataSource = self

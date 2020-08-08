@@ -10,4 +10,5 @@ import Foundation
 struct Str {
     static var search: String { return "Search" }
     static var albumsTitle: String { return "Discover" }
+    static var cancel: String { return "Cancel" }
 }

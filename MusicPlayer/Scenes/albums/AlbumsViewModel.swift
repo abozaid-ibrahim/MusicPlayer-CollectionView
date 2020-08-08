@@ -63,8 +63,9 @@ final class AlbumsViewModel: AlbumsViewModelType {
         let api: Observable<AlbumsResponse?> = apiClient.getData(of: apiEndpoint)
         api.subscribe(onNext: { [unowned self] response in
             self.updateUI(with: response?.data.sessions ?? [], showLoader: showLoader)
-        }, onError: { err in
+        }, onError: { [unowned self] err in
             self.error.onNext(err.localizedDescription)
+            if showLoader { self.isDataLoading.onNext(false) }
         }).disposed(by: disposeBag)
     }
 
@@ -75,7 +76,7 @@ final class AlbumsViewModel: AlbumsViewModelType {
         if page.currentPage == 0 {
             reloadFields.onNext(.all)
         } else {
-            let rows = (startRange ... sessionsList.count-1).map { IndexPath(row: $0, section: 0) }
+            let rows = (startRange ... sessionsList.count - 1).map { IndexPath(row: $0, section: 0) }
             reloadFields.onNext(.insertIndexPaths(rows))
         }
         updatePage(with: sessionsList.count)
@@ -91,8 +92,9 @@ final class AlbumsViewModel: AlbumsViewModelType {
                     self.searchResultList = value?.data.sessions ?? []
                     self.reloadFields.onNext(.all)
                     self.isSearchLoading.onNext(false)
-                }, onError: { err in
+                }, onError: { [unowned self] err in
                     self.error.onNext(err.localizedDescription)
+                    self.isSearchLoading.onNext(false)
                 }).disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
     }

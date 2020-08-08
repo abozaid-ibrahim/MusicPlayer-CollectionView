@@ -21,6 +21,7 @@ final class AppNavigator: Navigator {
     @discardableResult
     init(window: UIWindow) {
         AppNavigator.navigationController = UINavigationController(rootViewController: Destination.albums.controller)
+        AppNavigator.navigationController?.navigationBar.prefersLargeTitles = true
         window.rootViewController = AppNavigator.navigationController
         window.makeKeyAndVisible()
     }
@@ -30,13 +31,9 @@ final class AppNavigator: Navigator {
             throw NavigatorError.noRoot
         }
     }
-  
+
     func push(_ dest: Destination) {
         AppNavigator.navigationController.pushViewController(dest.controller, animated: true)
-    }
-
-    func pushAsNewRoot(_ dest: Destination) {
-        AppNavigator.navigationController.viewControllers = [dest.controller]
     }
 }
 
