@@ -22,6 +22,7 @@ final class AppNavigator: Navigator {
     init(window: UIWindow) {
         AppNavigator.navigationController = UINavigationController(rootViewController: Destination.albums.controller)
         AppNavigator.navigationController?.navigationBar.prefersLargeTitles = true
+        AppNavigator.navigationController?.navigationItem.largeTitleDisplayMode = .never
         window.rootViewController = AppNavigator.navigationController
         window.makeKeyAndVisible()
     }

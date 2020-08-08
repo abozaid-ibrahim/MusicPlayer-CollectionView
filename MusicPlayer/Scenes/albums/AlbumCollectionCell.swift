@@ -24,6 +24,5 @@ final class AlbumCollectionCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         contentView.cornerRadius = 12
-//        self.color
     }
 }

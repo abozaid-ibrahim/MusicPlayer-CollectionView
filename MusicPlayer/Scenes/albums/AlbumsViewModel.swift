@@ -21,7 +21,7 @@ protocol AlbumsViewModelType {
     var isSearchLoading: PublishSubject<Bool> { get }
     var reloadFields: PublishSubject<CollectionReload> { get }
     func searchCanceled()
-    func loadData(showLoader: Bool)
+    func loadData()
     func prefetchItemsAt(prefetch: Bool, indexPaths: [IndexPath])
 }
 
@@ -53,24 +53,27 @@ final class AlbumsViewModel: AlbumsViewModelType {
         reloadFields.onNext(.all)
     }
 
-    func loadData(showLoader: Bool = true) {
+    func loadData() {
         guard page.shouldLoadMore else {
             return
         }
         page.isFetchingData = true
-        if showLoader { isDataLoading.onNext(true) }
+        isDataLoading.onNext(true)
         let apiEndpoint = AlbumsApi.feed(page: page.currentPage, count: page.countPerPage)
         let api: Observable<AlbumsResponse?> = apiClient.getData(of: apiEndpoint)
-        api.subscribe(onNext: { [unowned self] response in
-            self.updateUI(with: response?.data.sessions ?? [], showLoader: showLoader)
-        }, onError: { [unowned self] err in
-            self.error.onNext(err.localizedDescription)
-            if showLoader { self.isDataLoading.onNext(false) }
-        }).disposed(by: disposeBag)
+        let concurrentScheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+        api.subscribeOn(concurrentScheduler)
+            .delay(DispatchTimeInterval.seconds(0), scheduler: concurrentScheduler)
+            .subscribe(onNext: { [unowned self] response in
+                self.updateUI(with: response?.data.sessions ?? [])
+            }, onError: { [unowned self] err in
+                self.error.onNext(err.localizedDescription)
+                self.isDataLoading.onNext(false)
+            }).disposed(by: disposeBag)
     }
 
-    private func updateUI(with sessions: [Session], showLoader: Bool = true) {
-        if showLoader { isDataLoading.onNext(false) }
+    private func updateUI(with sessions: [Session]) {
+        isDataLoading.onNext(false)
         let startRange = sessionsList.count
         sessionsList.append(contentsOf: sessions)
         if page.currentPage == 0 {

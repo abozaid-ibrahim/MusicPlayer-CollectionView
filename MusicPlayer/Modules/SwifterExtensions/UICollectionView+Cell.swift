@@ -35,7 +35,14 @@ extension UICollectionView {
             layout.sectionInset = .init(top: padding, left: padding, bottom: padding, right: padding)
             layout.minimumInteritemSpacing = padding
             layout.minimumLineSpacing = padding
+            layout.footerReferenceSize = CGSize(width: space * 2, height: space / 2)
             setCollectionViewLayout(layout, animated: true)
         }
+    }
+
+    func updateFooterHeight(height: CGFloat = 50) {
+        guard let layout = collectionViewLayout as? UICollectionViewFlowLayout else { return }
+        layout.footerReferenceSize = CGSize(width: layout.footerReferenceSize.width, height: height)
+        setCollectionViewLayout(layout, animated: false)
     }
 }

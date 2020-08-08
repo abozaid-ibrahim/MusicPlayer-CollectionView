@@ -10,7 +10,7 @@ import RxSwift
 import UIKit
 
 import RxCocoa
-final class AlbumsController: UICollectionViewController, Loadable {
+final class AlbumsController: UICollectionViewController {
     private let viewModel: AlbumsViewModelType
     private let disposeBag = DisposeBag()
 
@@ -54,16 +54,21 @@ private extension AlbumsController {
             .disposed(by: disposeBag)
         viewModel.isDataLoading
             .observeOn(MainScheduler.instance)
-            .bind(onNext: showLoading(show:)).disposed(by: disposeBag)
+            .map { $0 ? CGFloat(50) : CGFloat(0) }
+            .bind(onNext: collectionView.updateFooterHeight(height:)).disposed(by: disposeBag)
+
         viewModel.error
             .observeOn(MainScheduler.instance)
             .bind(onNext: show(error:)).disposed(by: disposeBag)
-        viewModel.loadData(showLoader: true)
+        viewModel.loadData()
     }
 
     func setupCollection() {
         title = Str.albumsTitle
         collectionView.register(AlbumCollectionCell.self)
+        collectionView.register(ActivityIndicatorFooterView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                                withReuseIdentifier: ActivityIndicatorFooterView.id)
         collectionView.setCell(type: .twoColumn)
         collectionView.prefetchDataSource = self
     }
@@ -79,7 +84,6 @@ private extension AlbumsController {
                 searchController.searchBar.isLoading = $0
             }).disposed(by: disposeBag)
         navigationItem.searchController = searchController
-        navigationItem.titleView = searchController.searchBar
         definesPresentationContext = true
     }
 }
@@ -108,6 +112,18 @@ extension AlbumsController {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumCollectionCell.identifier, for: indexPath) as! AlbumCollectionCell
         cell.setData(with: albums[indexPath.row])
         return cell
+    }
+
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case UICollectionView.elementKindSectionFooter:
+            return collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                   withReuseIdentifier: ActivityIndicatorFooterView.id,
+                                                                   for: indexPath)
+
+        default:
+            fatalError("Unexpected element kind")
+        }
     }
 }
 
