@@ -28,7 +28,7 @@ extension Loadable where Self: UIViewController {
     private func showLoading() {
         let activityView: UIActivityIndicatorView
         if #available(iOS 13, *) {
-            activityView = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
+            activityView = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
         } else {
             activityView = UIActivityIndicatorView(style: .gray)
         }

@@ -7,42 +7,50 @@
 //
 
 import Foundation
-
-import Combine
 import RxSwift
+enum CollectionReload {
+    case all
+    case insertIndexPaths([IndexPath])
+}
+
 protocol AlbumsViewModelType {
-    func loadData(showLoader: Bool)
-    func searchCanceled()
+    var dataList: [Session] { get }
+    var error: PublishSubject<String> { get }
     var searchFor: PublishSubject<String> { get }
+    var isDataLoading: PublishSubject<Bool> { get }
     var isSearchLoading: PublishSubject<Bool> { get }
-    var sessionsList: [Session] { get }
-    var reloadFields: PublishSubject<Bool> { get }
+    var reloadFields: PublishSubject<CollectionReload> { get }
+    func searchCanceled()
+    func loadData(showLoader: Bool)
+    func prefetchItemsAt(prefetch: Bool, indexPaths: [IndexPath])
 }
 
 final class AlbumsViewModel: AlbumsViewModelType {
-    let isSearchLoading = PublishSubject<Bool>()
+    let error = PublishSubject<String>()
     let searchFor = PublishSubject<String>()
-    private(set) var reloadFields = PublishSubject<Bool>()
-    private(set) var _sessionsList: [Session] = []
-    private(set) var searchResultList: [Session] = []
-    private var isSearchingMode = false
+    let isDataLoading = PublishSubject<Bool>()
+    let isSearchLoading = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
-    private let showLoader = PublishSubject<Bool>()
     private let apiClient: ApiClient
     private var page = Page()
+    private var isSearchingMode = false
+    private var sessionsList: [Session] = []
+    private var searchResultList: [Session] = []
+
+    private(set) var reloadFields = PublishSubject<CollectionReload>()
 
     init(apiClient: ApiClient = HTTPClient()) {
         self.apiClient = apiClient
         bindForSearch()
     }
 
-    var sessionsList: [Session] {
-        isSearchingMode ? searchResultList : _sessionsList
+    var dataList: [Session] {
+        isSearchingMode ? searchResultList : sessionsList
     }
 
     func searchCanceled() {
         isSearchingMode = false
-        reloadFields.onNext(true)
+        reloadFields.onNext(.all)
     }
 
     func loadData(showLoader: Bool = true) {
@@ -50,42 +58,41 @@ final class AlbumsViewModel: AlbumsViewModelType {
             return
         }
         page.isFetchingData = true
-//        showLoader ? self.showLoader.onNext(true) : ()
+        if showLoader { isDataLoading.onNext(true) }
         let apiEndpoint = AlbumsApi.feed(page: page.currentPage, count: page.countPerPage)
         let api: Observable<AlbumsResponse?> = apiClient.getData(of: apiEndpoint)
-
-        api.subscribe(onNext: { [unowned self] value in
-
-            self._sessionsList.append(contentsOf: value?.data.sessions ?? [])
-            self.reloadFields.onNext(true)
-            showLoader ? self.showLoader.onNext(false) : ()
+        api.subscribe(onNext: { [unowned self] response in
+            self.updateUI(with: response?.data.sessions ?? [], showLoader: showLoader)
         }, onError: { err in
-//                  self.error.onNext(err)
-            print(">>failure")
-
-            print(err)
+            self.error.onNext(err.localizedDescription)
         }).disposed(by: disposeBag)
     }
 
+    private func updateUI(with sessions: [Session], showLoader: Bool = true) {
+        if showLoader { isDataLoading.onNext(false) }
+        let startRange = sessionsList.count
+        sessionsList.append(contentsOf: sessions)
+        if page.currentPage == 0 {
+            reloadFields.onNext(.all)
+        } else {
+            let rows = (startRange ... sessionsList.count-1).map { IndexPath(row: $0, section: 0) }
+            reloadFields.onNext(.insertIndexPaths(rows))
+        }
+        updatePage(with: sessionsList.count)
+    }
+
     private func bindForSearch() {
-        searchFor
-            .distinctUntilChanged()
+        searchFor.distinctUntilChanged()
             .subscribe(onNext: { [unowned self] text in
                 self.isSearchLoading.onNext(true)
-                // remove repeated values
-                //        showLoader ? self.showLoader.onNext(true) : ()
-
                 let endpoint: Observable<AlbumsResponse?> = self.apiClient.getData(of: AlbumsApi.search(text))
                 endpoint.subscribe(onNext: { [unowned self] value in
                     self.isSearchingMode = true
                     self.searchResultList = value?.data.sessions ?? []
-                    self.reloadFields.onNext(true)
+                    self.reloadFields.onNext(.all)
                     self.isSearchLoading.onNext(false)
                 }, onError: { err in
-                    //                  self.error.onNext(err)
-                    print(">>failure")
-
-                    print(err)
+                    self.error.onNext(err.localizedDescription)
                 }).disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
     }
@@ -96,13 +103,10 @@ final class AlbumsViewModel: AlbumsViewModelType {
         page.fetchedItemsCount = count
     }
 
-    func loadMoreCells(prefetchRowsAt indexPaths: [IndexPath]) {
-        if indexPaths.contains(where: isLoadingCell) {
-            loadData(showLoader: false)
+    func prefetchItemsAt(prefetch: Bool, indexPaths: [IndexPath]) {
+        guard let max = indexPaths.map({ $0.row }).max() else { return }
+        if page.fetchedItemsCount <= (max + 1) {
+            prefetch ? loadData() : apiClient.cancel()
         }
-    }
-
-    private func isLoadingCell(for indexPath: IndexPath) -> Bool {
-        return indexPath.row + 10 >= page.fetchedItemsCount
     }
 }

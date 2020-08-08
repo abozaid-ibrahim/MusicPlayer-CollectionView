@@ -12,13 +12,9 @@ struct AlbumsResponse: Codable {
     let data: DataClass
 }
 
-// MARK: - DataClass
-
 struct DataClass: Codable {
     let sessions: [Session]
 }
-
-// MARK: - Session
 
 struct Session: Codable {
     let name: String
@@ -33,8 +29,6 @@ struct Session: Codable {
         case currentTrack = "current_track"
     }
 }
-
-// MARK: - CurrentTrack
 
 struct CurrentTrack: Codable {
     let title: String

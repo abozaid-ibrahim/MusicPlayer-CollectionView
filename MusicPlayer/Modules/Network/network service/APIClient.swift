@@ -11,10 +11,15 @@ import RxCocoa
 
 protocol ApiClient {
     func getData<T: Decodable>(of request: RequestBuilder) -> Observable<T?>
+    func cancel()
 }
 
 /// api handler, wrapper for the Url session
 final class HTTPClient: ApiClient {
+    func cancel() {
+        //TODO:
+    }
+    
     private let disposeBag = DisposeBag()
     func getData<T: Decodable>(of request: RequestBuilder) -> Observable<T?> {
         return excute(request).compactMap { $0?.toModel() }
@@ -34,7 +39,7 @@ final class HTTPClient: ApiClient {
                     observer.onError(NetworkFailure.generalFailure)
                     return
                 }
-                print(String(data: data!, encoding: .utf8) ?? "")
+//                print(String(data: data!, encoding: .utf8) ?? "")
                 observer.onNext(data)
             }
             task.resume()

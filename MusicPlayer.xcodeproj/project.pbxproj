@@ -131,7 +131,6 @@
 			children = (
 				6C8F695924DECD800021B8AC /* Loadable.swift */,
 				6C93910824DEAF57003D143A /* ImageDownloader.swift */,
-				6C8F695B24DED2110021B8AC /* UISearchBar+ActivityIndicator.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -197,6 +196,7 @@
 		6CA08ADA24DDACA900B7D510 /* SwifterExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				6C8F695B24DED2110021B8AC /* UISearchBar+ActivityIndicator.swift */,
 				6C93910524DE9477003D143A /* DataExtension.swift */,
 				6CA08ADB24DDACCC00B7D510 /* UICollectionView+Cell.swift */,
 				6C8F695524DEB4D70021B8AC /* UIView+Layer.swift */,

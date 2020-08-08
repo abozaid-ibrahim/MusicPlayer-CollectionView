@@ -10,11 +10,11 @@ import RxSwift
 import UIKit
 
 import RxCocoa
-final class AlbumsController: UICollectionViewController {
+final class AlbumsController: UICollectionViewController, Loadable {
     private let viewModel: AlbumsViewModelType
     private let disposeBag = DisposeBag()
 
-    var albums: [Session] { viewModel.sessionsList }
+    var albums: [Session] { viewModel.dataList }
     init(viewModel: AlbumsViewModelType) {
         self.viewModel = viewModel
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -31,20 +31,34 @@ final class AlbumsController: UICollectionViewController {
         setupCollection()
         bindToViewModel()
     }
+}
 
-    private func bindToViewModel() {
-//        viewModel.loadData(showLoader: false)
-        viewModel.reloadFields.filter { $0 == true }.bind(to: collectionView.rx.reloadData).disposed(by: disposeBag)
+// MARK: - setup
+
+private extension AlbumsController {
+    func bindToViewModel() {
+        viewModel.reloadFields
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [unowned self] reload in
+                switch reload {
+                case .all: self.collectionView.reloadData()
+                case let .insertIndexPaths(paths): self.collectionView.insertItems(at: paths)
+                }
+            })
+            .disposed(by: disposeBag)
+        viewModel.isDataLoading.bind(onNext: showLoading(show:)).disposed(by: disposeBag)
+        viewModel.loadData(showLoader: true)
     }
 
-    private func setupCollection() {
-        title = "Collections"
+    func setupCollection() {
+        title = Str.albumsTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         collectionView.register(AlbumCollectionCell.self)
         collectionView.setCell(type: .twoColumn)
+        collectionView.prefetchDataSource = self
     }
 
-    private func setupSearchBar() {
+    func setupSearchBar() {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
@@ -58,7 +72,24 @@ final class AlbumsController: UICollectionViewController {
         navigationItem.titleView = searchController.searchBar
         definesPresentationContext = true
     }
+}
 
+// MARK: - UISearchResultsUpdating
+
+extension AlbumsController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard searchController.isActive else {
+            viewModel.searchCanceled()
+            return
+        }
+        guard let text = searchController.searchBar.text else { return }
+        viewModel.searchFor.onNext(text)
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+
+extension AlbumsController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return albums.count
     }
@@ -70,23 +101,14 @@ final class AlbumsController: UICollectionViewController {
     }
 }
 
-extension Reactive where Base: UICollectionView {
-    public var reloadData: Binder<Bool> {
-        return Binder(base) { collectionView, active in
-            if active {
-                collectionView.reloadData()
-            }
-        }
-    }
-}
+// MARK: - UICollectionViewDataSourcePrefetching
 
-extension AlbumsController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard searchController.isActive else {
-            viewModel.searchCanceled()
-            return
-        }
-        guard let text = searchController.searchBar.text else { return }
-        viewModel.searchFor.onNext(text)
+extension AlbumsController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        viewModel.prefetchItemsAt(prefetch: true, indexPaths: indexPaths)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        viewModel.prefetchItemsAt(prefetch: false, indexPaths: indexPaths)
     }
 }

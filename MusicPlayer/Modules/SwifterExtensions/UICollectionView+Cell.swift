@@ -25,7 +25,7 @@ extension UICollectionView {
         register(nib, forCellWithReuseIdentifier: T.identifier)
     }
 
-    func setCell(type: CollectionWidth, padding: CGFloat = CGFloat(8)) {
+    func setCell(type: CollectionWidth, padding: CGFloat = CGFloat(16)) {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         if case .twoColumn = type {
