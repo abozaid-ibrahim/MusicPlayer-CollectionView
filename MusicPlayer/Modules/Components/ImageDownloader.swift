@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+
 typealias DownloadImageCompletion = ((UIImage?, Bool) -> Void)
 protocol ImageDownloaderType {
     func downloadImageWith(url: URL, placeholder: UIImage?, imageView: UIImageView, completion: DownloadImageCompletion?) -> Disposable
@@ -23,7 +24,6 @@ extension URLSessionDataTask: Disposable {
     }
 }
 
-// TODO: Add Image Local Caching
 public final class ImageDownloader: ImageDownloaderType {
     func downloadImageWith(url: URL, placeholder: UIImage?, imageView: UIImageView, completion: DownloadImageCompletion? = nil) -> Disposable {
         imageView.image = placeholder

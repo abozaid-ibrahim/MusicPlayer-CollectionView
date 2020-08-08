@@ -9,11 +9,7 @@
 import Foundation
 extension Data {
     func toModel<T: Decodable>() -> T? {
-        do {
-            return try JSONDecoder().decode(T.self, from: self)
-        } catch {
-            return nil
-        }
+        return try? JSONDecoder().decode(T.self, from: self)
     }
 
     var toString: String {

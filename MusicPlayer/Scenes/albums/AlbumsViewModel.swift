@@ -73,7 +73,18 @@ final class AlbumsViewModel: AlbumsViewModelType {
             }).disposed(by: disposeBag)
     }
 
-    private func updateUI(with sessions: [Session]) {
+    func prefetchItemsAt(prefetch: Bool, indexPaths: [IndexPath]) {
+        guard let max = indexPaths.map({ $0.row }).max() else { return }
+        if page.fetchedItemsCount <= (max + 1) {
+            prefetch ? loadData() : apiClient.cancel()
+        }
+    }
+}
+
+// MARK: private
+
+private extension AlbumsViewModel {
+    func updateUI(with sessions: [Session]) {
         isDataLoading.onNext(false)
         let startRange = sessionsList.count
         sessionsList.append(contentsOf: sessions)
@@ -86,7 +97,7 @@ final class AlbumsViewModel: AlbumsViewModelType {
         updatePage(with: sessionsList.count)
     }
 
-    private func bindForSearch() {
+    func bindForSearch() {
         searchFor.distinctUntilChanged()
             .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] text in
@@ -104,16 +115,9 @@ final class AlbumsViewModel: AlbumsViewModelType {
             }).disposed(by: disposeBag)
     }
 
-    private func updatePage(with count: Int) {
+    func updatePage(with count: Int) {
         page.isFetchingData = false
         page.currentPage += 1
         page.fetchedItemsCount = count
-    }
-
-    func prefetchItemsAt(prefetch: Bool, indexPaths: [IndexPath]) {
-        guard let max = indexPaths.map({ $0.row }).max() else { return }
-        if page.fetchedItemsCount <= (max + 1) {
-            prefetch ? loadData() : apiClient.cancel()
-        }
     }
 }

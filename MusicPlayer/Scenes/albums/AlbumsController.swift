@@ -8,13 +8,13 @@
 
 import RxSwift
 import UIKit
-
 import RxCocoa
+
 final class AlbumsController: UICollectionViewController {
     private let viewModel: AlbumsViewModelType
     private let disposeBag = DisposeBag()
-
     private var albums: [Session] { viewModel.dataList }
+
     init(viewModel: AlbumsViewModelType) {
         self.viewModel = viewModel
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
