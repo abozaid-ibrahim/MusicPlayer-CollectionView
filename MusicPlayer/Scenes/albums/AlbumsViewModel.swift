@@ -10,37 +10,34 @@ import Foundation
 
 import Combine
 import RxSwift
-
 protocol AlbumsViewModelType {
     func loadData(showLoader: Bool)
     func searchCanceled()
     var searchFor: PublishSubject<String> { get }
+    var isSearchLoading: PublishSubject<Bool> { get }
     var sessionsList: [Session] { get }
     var reloadFields: PublishSubject<Bool> { get }
 }
 
 final class AlbumsViewModel: AlbumsViewModelType {
+    let isSearchLoading = PublishSubject<Bool>()
     let searchFor = PublishSubject<String>()
-
     private(set) var reloadFields = PublishSubject<Bool>()
-
-//    private let showLoader = PublishSubject<Bool>()
-    private let apiClient: ApiClient
-    private var page = Page()
-    var sessionsList: [Session] {
-        isSearchingMode ? searchResultList : _sessionsList
-    }
-
     private(set) var _sessionsList: [Session] = []
-
     private(set) var searchResultList: [Session] = []
     private var isSearchingMode = false
     private let disposeBag = DisposeBag()
     private let showLoader = PublishSubject<Bool>()
+    private let apiClient: ApiClient
+    private var page = Page()
 
     init(apiClient: ApiClient = HTTPClient()) {
         self.apiClient = apiClient
         bindForSearch()
+    }
+
+    var sessionsList: [Session] {
+        isSearchingMode ? searchResultList : _sessionsList
     }
 
     func searchCanceled() {
@@ -71,8 +68,10 @@ final class AlbumsViewModel: AlbumsViewModelType {
     }
 
     private func bindForSearch() {
-        searchFor.distinctUntilChanged()
+        searchFor
+            .distinctUntilChanged()
             .subscribe(onNext: { [unowned self] text in
+                self.isSearchLoading.onNext(true)
                 // remove repeated values
                 //        showLoader ? self.showLoader.onNext(true) : ()
 
@@ -81,6 +80,7 @@ final class AlbumsViewModel: AlbumsViewModelType {
                     self.isSearchingMode = true
                     self.searchResultList = value?.data.sessions ?? []
                     self.reloadFields.onNext(true)
+                    self.isSearchLoading.onNext(false)
                 }, onError: { err in
                     //                  self.error.onNext(err)
                     print(">>failure")

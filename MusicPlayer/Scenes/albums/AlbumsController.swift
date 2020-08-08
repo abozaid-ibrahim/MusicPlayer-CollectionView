@@ -49,8 +49,12 @@ final class AlbumsController: UICollectionViewController {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = Str.search
+        viewModel.isSearchLoading
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: {
+                searchController.searchBar.isLoading = $0
+            }).disposed(by: disposeBag)
         navigationItem.searchController = searchController
-        /// ios 10 compatiblity
         navigationItem.titleView = searchController.searchBar
         definesPresentationContext = true
     }
