@@ -39,7 +39,6 @@ final class HTTPClient: ApiClient {
                     observer.onError(NetworkFailure.generalFailure)
                     return
                 }
-//                print(String(data: data!, encoding: .utf8) ?? "")
                 observer.onNext(data)
             }
             task.resume()

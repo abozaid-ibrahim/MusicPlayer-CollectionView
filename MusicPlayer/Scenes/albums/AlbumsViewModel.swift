@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+
 enum CollectionReload {
     case all
     case insertIndexPaths([IndexPath])
@@ -87,6 +88,7 @@ final class AlbumsViewModel: AlbumsViewModelType {
 
     private func bindForSearch() {
         searchFor.distinctUntilChanged()
+            .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] text in
                 self.isSearchLoading.onNext(true)
                 let endpoint: Observable<AlbumsResponse?> = self.apiClient.getData(of: AlbumsApi.search(text))

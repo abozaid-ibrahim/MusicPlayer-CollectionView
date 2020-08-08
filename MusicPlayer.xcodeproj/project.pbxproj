@@ -8,13 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		6C36EA7C24DDAE7200807514 /* AlbumsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C36EA7B24DDAE7200807514 /* AlbumsViewModel.swift */; };
-		6C69E43624DDB0E6005D9F89 /* ModuleAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E43524DDB0E6005D9F89 /* ModuleAssembler.swift */; };
+		6C69E43624DDB0E6005D9F89 /* AlbumsAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E43524DDB0E6005D9F89 /* AlbumsAssembler.swift */; };
 		6C69E43924DDB1A7005D9F89 /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E43824DDB1A7005D9F89 /* Navigator.swift */; };
 		6C69E44124DDB3C5005D9F89 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E43D24DDB3C5005D9F89 /* APIClient.swift */; };
 		6C69E44224DDB3C5005D9F89 /* RequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E43E24DDB3C5005D9F89 /* RequestBuilder.swift */; };
 		6C69E44324DDB3C5005D9F89 /* Pageable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E43F24DDB3C5005D9F89 /* Pageable.swift */; };
 		6C69E44424DDB3C5005D9F89 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E44024DDB3C5005D9F89 /* NetworkError.swift */; };
 		6C69E44624DDB636005D9F89 /* AlbumsApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C69E44524DDB636005D9F89 /* AlbumsApi.swift */; };
+		6C87BC5924DF54B50043E704 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 6C87BC5824DF54B50043E704 /* README.md */; };
+		6C87BC5B24DF565C0043E704 /* Challenge.md in Resources */ = {isa = PBXBuildFile; fileRef = 6C87BC5A24DF565C0043E704 /* Challenge.md */; };
 		6C8F695624DEB4D70021B8AC /* UIView+Layer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8F695524DEB4D70021B8AC /* UIView+Layer.swift */; };
 		6C8F695824DEC6BC0021B8AC /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8F695724DEC6BC0021B8AC /* Strings.swift */; };
 		6C8F695A24DECD800021B8AC /* Loadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8F695924DECD800021B8AC /* Loadable.swift */; };
@@ -57,13 +59,15 @@
 
 /* Begin PBXFileReference section */
 		6C36EA7B24DDAE7200807514 /* AlbumsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewModel.swift; sourceTree = "<group>"; };
-		6C69E43524DDB0E6005D9F89 /* ModuleAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleAssembler.swift; sourceTree = "<group>"; };
+		6C69E43524DDB0E6005D9F89 /* AlbumsAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsAssembler.swift; sourceTree = "<group>"; };
 		6C69E43824DDB1A7005D9F89 /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
 		6C69E43D24DDB3C5005D9F89 /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APIClient.swift; path = "network service/APIClient.swift"; sourceTree = "<group>"; };
 		6C69E43E24DDB3C5005D9F89 /* RequestBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestBuilder.swift; sourceTree = "<group>"; };
 		6C69E43F24DDB3C5005D9F89 /* Pageable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pageable.swift; sourceTree = "<group>"; };
 		6C69E44024DDB3C5005D9F89 /* NetworkError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		6C69E44524DDB636005D9F89 /* AlbumsApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsApi.swift; sourceTree = "<group>"; };
+		6C87BC5824DF54B50043E704 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		6C87BC5A24DF565C0043E704 /* Challenge.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = Challenge.md; sourceTree = "<group>"; };
 		6C8F695524DEB4D70021B8AC /* UIView+Layer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Layer.swift"; sourceTree = "<group>"; };
 		6C8F695724DEC6BC0021B8AC /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		6C8F695924DECD800021B8AC /* Loadable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loadable.swift; sourceTree = "<group>"; };
@@ -186,7 +190,7 @@
 				6CA08AD724DDAC5F00B7D510 /* AlbumCollectionCell.xib */,
 				6C8F696524DF02E50021B8AC /* ActivityIndicatorFooterView.swift */,
 				6CA08AD224DDABA900B7D510 /* Albums.swift */,
-				6C69E43524DDB0E6005D9F89 /* ModuleAssembler.swift */,
+				6C69E43524DDB0E6005D9F89 /* AlbumsAssembler.swift */,
 				6C69E44524DDB636005D9F89 /* AlbumsApi.swift */,
 				6C8F695724DEC6BC0021B8AC /* Strings.swift */,
 			);
@@ -207,6 +211,8 @@
 		6CA0ABB024DD7418003FFC44 = {
 			isa = PBXGroup;
 			children = (
+				6C87BC5824DF54B50043E704 /* README.md */,
+				6C87BC5A24DF565C0043E704 /* Challenge.md */,
 				6CA0ABBB24DD7418003FFC44 /* MusicPlayer */,
 				6CA0ABD224DD7419003FFC44 /* MusicPlayerTests */,
 				6CA0ABDD24DD7419003FFC44 /* MusicPlayerUITests */,
@@ -374,7 +380,9 @@
 			files = (
 				6CA0ABC924DD7419003FFC44 /* LaunchScreen.storyboard in Resources */,
 				6CA08AD924DDAC5F00B7D510 /* AlbumCollectionCell.xib in Resources */,
+				6C87BC5924DF54B50043E704 /* README.md in Resources */,
 				6CA0ABC624DD7419003FFC44 /* Preview Assets.xcassets in Resources */,
+				6C87BC5B24DF565C0043E704 /* Challenge.md in Resources */,
 				6CA0ABC324DD7419003FFC44 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -418,7 +426,7 @@
 				6C69E44624DDB636005D9F89 /* AlbumsApi.swift in Sources */,
 				6CA08ADC24DDACCC00B7D510 /* UICollectionView+Cell.swift in Sources */,
 				6CA08AD824DDAC5F00B7D510 /* AlbumCollectionCell.swift in Sources */,
-				6C69E43624DDB0E6005D9F89 /* ModuleAssembler.swift in Sources */,
+				6C69E43624DDB0E6005D9F89 /* AlbumsAssembler.swift in Sources */,
 				6C69E44124DDB3C5005D9F89 /* APIClient.swift in Sources */,
 				6C8F695C24DED2110021B8AC /* UISearchBar+ActivityIndicator.swift in Sources */,
 			);
