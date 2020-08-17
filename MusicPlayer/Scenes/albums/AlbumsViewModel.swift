@@ -65,16 +65,16 @@ final class AlbumsViewModel: AlbumsViewModelType {
         let concurrentScheduler = ConcurrentDispatchQueueScheduler(qos: .background)
         api.subscribeOn(concurrentScheduler)
             .delay(DispatchTimeInterval.seconds(0), scheduler: concurrentScheduler)
-            .subscribe(onNext: { [unowned self] response in
-                self.updateUI(with: response?.data.sessions ?? [])
-            }, onError: { [unowned self] err in
-                self.error.onNext(err.localizedDescription)
-                self.isDataLoading.onNext(false)
+            .subscribe(onNext: { [weak self] response in
+                self?.updateUI(with: response?.data.sessions ?? [])
+            }, onError: { [weak self] err in
+                self?.error.onNext(err.localizedDescription)
+                self?.isDataLoading.onNext(false)
             }).disposed(by: disposeBag)
     }
 
     func prefetchItemsAt(prefetch: Bool, indexPaths: [IndexPath]) {
-        guard let max = indexPaths.map({ $0.row }).max() else { return }
+        guard let max = indexPaths.map({ $0.row }).max() , !isSearchingMode else { return }
         if page.fetchedItemsCount <= (max + 1) {
             prefetch ? loadData() : apiClient.cancel()
         }
@@ -103,7 +103,8 @@ private extension AlbumsViewModel {
             .subscribe(onNext: { [unowned self] text in
                 self.isSearchLoading.onNext(true)
                 let endpoint: Observable<AlbumsResponse?> = self.apiClient.getData(of: AlbumsApi.search(text))
-                endpoint.subscribe(onNext: { [unowned self] value in
+                endpoint.subscribe(onNext: { [weak self] value in
+                    guard let self = self else{return}
                     self.isSearchingMode = true
                     self.searchResultList = value?.data.sessions ?? []
                     self.reloadFields.onNext(.all)

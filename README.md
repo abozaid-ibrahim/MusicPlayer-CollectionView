@@ -8,7 +8,7 @@
 # Getting Started
 If this is your first time encountering swift/ios development, please follow [the instructions](https://developer.apple.com/support/xcode/) to setup Xcode and Swift on your Mac. 
 - checkout `master` branch to run latest version
-- open the project by double clicking the `MusicPlayer.xcproject` file
+- open the project by double clicking the `MusicPlayer.xcodeproj` file
 - make sure you downloaded swift-packages
 ## Configs
 ```

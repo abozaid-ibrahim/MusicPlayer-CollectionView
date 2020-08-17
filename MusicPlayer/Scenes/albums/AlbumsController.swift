@@ -6,9 +6,9 @@
 //  Copyright © 2020 abuzeid. All rights reserved.
 //
 
+import RxCocoa
 import RxSwift
 import UIKit
-import RxCocoa
 
 final class AlbumsController: UICollectionViewController {
     private let viewModel: AlbumsViewModelType
@@ -42,24 +42,27 @@ private extension AlbumsController {
         present(alert, animated: true, completion: nil)
     }
 
+    func collection(reload: CollectionReload) {
+        switch reload {
+        case .all: collectionView.reloadData()
+        case let .insertIndexPaths(paths): collectionView.insertItems(at: paths)
+        }
+    }
+
     func bindToViewModel() {
         viewModel.reloadFields
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] reload in
-                switch reload {
-                case .all: self.collectionView.reloadData()
-                case let .insertIndexPaths(paths): self.collectionView.insertItems(at: paths)
-                }
-            })
+            .asDriver(onErrorJustReturn: .all)
+            .drive(onNext: collection(reload:))
             .disposed(by: disposeBag)
         viewModel.isDataLoading
-            .observeOn(MainScheduler.instance)
             .map { $0 ? CGFloat(50) : CGFloat(0) }
-            .bind(onNext: collectionView.updateFooterHeight(height:)).disposed(by: disposeBag)
+            .asDriver(onErrorJustReturn: 0)
+            .drive(onNext: collectionView.updateFooterHeight(height:))
+            .disposed(by: disposeBag)
 
         viewModel.error
-            .observeOn(MainScheduler.instance)
-            .bind(onNext: show(error:)).disposed(by: disposeBag)
+            .asDriver(onErrorJustReturn: "")
+            .drive(onNext: show(error:)).disposed(by: disposeBag)
         viewModel.loadData()
     }
 
@@ -80,8 +83,8 @@ private extension AlbumsController {
         searchController.searchBar.placeholder = Str.search
         viewModel.isSearchLoading
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: {
-                searchController.searchBar.isLoading = $0
+            .subscribe(onNext: { [weak searchController] in
+                searchController?.searchBar.isLoading = $0
             }).disposed(by: disposeBag)
         navigationItem.searchController = searchController
         definesPresentationContext = true
